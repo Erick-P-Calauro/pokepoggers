@@ -57,6 +57,18 @@ body {
     padding-block: 5rem;
 }
 
+#main-section-filters {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding-bottom: 3rem;
+}
+
+#main-section-filters select, #main-section-filters input {
+    font-size: 1.8rem;
+}
+
 #main-section-content {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
