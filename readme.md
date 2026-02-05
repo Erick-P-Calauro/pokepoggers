@@ -1,0 +1,1 @@
+Site inspirado em pokemon e feito com html, css e javascript.
