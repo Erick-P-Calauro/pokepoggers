@@ -1,11 +1,12 @@
 const API_URL = "https://pokeapi.co/api/v2";
 const loadMoreButton = document.body.querySelector("#load-more-button");
-const contentBox = document.body.querySelector("#main-section-content");
+const contentBox = document.body.querySelector("#main-section-grid");
 
 let pagination_counter = 0;
 let pagination_limit = 20;
 
 function inicializar() {
+    
     window.addEventListener("keypress", (event) => {
         if(event.key == "Enter") {
             buscarPokemonPorNome();
@@ -22,27 +23,37 @@ function limparMainSection() {
     loadMoreButton.removeAttribute("disabled");
 }
 
-function criarCardPokemon(pokemonIndex, pokemonName, pokemonImage) {
-    
-    // Primeira letra em maiúsculo.
-    pokemonName = pokemonName.charAt(0).toUpperCase() + pokemonName.slice(1, pokemonName.length);
+function criarCardPokemon(pokemonIndex, pokemonName, pokemonImage, pokemonUrl) {
 
-    const nomePokemon = document.createElement("span");
-    nomePokemon.innerText = pokemonName;
+    const div = document.createElement("div");
+    div.setAttribute("id", "pokemon-card");
 
     const indexPokemon = document.createElement("span");
-    indexPokemon.innerText = pokemonIndex;
+    indexPokemon.innerText = pokemonIndex;    
 
     const img = document.createElement("img");
     img.setAttribute("src", pokemonImage);
     img.setAttribute("alt", pokemonName + " image.");
 
-    const div = document.createElement("div");
-    div.setAttribute("id", "pokemon-card");
+    const nomePokemon = document.createElement("span");
+    pokemonName = pokemonName.charAt(0).toUpperCase() + pokemonName.slice(1, pokemonName.length); // Primeira letra em maiúsculo.
+    nomePokemon.innerText = pokemonName;
 
+    /*
+        <div onClick="() => {}">
+            <span> 1 </span>
+            <img src="./pokemonimage.png" />
+            <span> Pikachu </span>
+        </div>
+    */
     div.appendChild(indexPokemon);
     div.appendChild(img);
     div.appendChild(nomePokemon);
+
+    div.onclick = () => { 
+        sessionStorage.setItem("POKEMON_URL", pokemonUrl);
+        location.href = "./pokemon-info.html" // Muda a página
+    };
 
     return div;
 }
@@ -56,7 +67,7 @@ async function carregarMais () {
 
     result.results.forEach(async (pokemonInfo) => {
         const pokemon = await (await fetch(pokemonInfo.url)).json();
-        const pokemonCard = criarCardPokemon(index_counter, pokemonInfo.name, pokemon.sprites.front_default);
+        const pokemonCard = criarCardPokemon(index_counter, pokemonInfo.name, pokemon.sprites.front_default, pokemonInfo.url);
 
         contentBox.appendChild(pokemonCard);
         
@@ -86,7 +97,8 @@ async function buscarPokemonPorNome() {
     let result = await response.json(); 
     let index_counter = pagination_counter + 1;
 
-    contentBox.appendChild(criarCardPokemon(index_counter, result.name,  result.sprites.front_default));
+    // Quarto parâmetro é a url do pokemon no pokeapi
+    contentBox.appendChild(criarCardPokemon(index_counter, result.name,  result.sprites.front_default, API_URL + "/pokemon/"+inputValue));
 
     pagination_counter += 1;
 
